@@ -9,12 +9,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.util.Set;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import net.pumbas.quizapi.quiz.Quiz;
 
 @Data
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Question {
 
   @Id
@@ -35,7 +41,6 @@ public class Question {
 
   @ManyToOne
   @EqualsAndHashCode.Exclude
-  @JoinColumn(nullable = false)
   private Quiz quiz;
 
 }

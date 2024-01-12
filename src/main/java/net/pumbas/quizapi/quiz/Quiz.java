@@ -9,7 +9,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.util.Set;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import net.pumbas.quizapi.question.Question;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Fetch;
@@ -17,6 +20,9 @@ import org.hibernate.annotations.FetchMode;
 
 @Data
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Quiz {
 
   @Id
