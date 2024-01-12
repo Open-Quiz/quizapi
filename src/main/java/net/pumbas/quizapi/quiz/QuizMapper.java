@@ -10,19 +10,6 @@ import net.pumbas.quizapi.question.Question;
 import net.pumbas.quizapi.question.QuestionDto;
 import org.springframework.stereotype.Service;
 
-@Data
-class TestA {
-  private String title;
-  private TestB b;
-}
-
-@Data
-class TestB {
-  private String question;
-  private TestA a;
-}
-
-
 @Service
 public class QuizMapper {
   private static final String TEST_OWNER_ID = "test_owner_id";
@@ -38,13 +25,7 @@ public class QuizMapper {
         .map(createQuestionDto -> this.questionFromCreateQuestionDto(quiz, createQuestionDto))
         .collect(Collectors.toSet());
 
-    TestA a = new TestA();
-    a.setTitle(createQuizDto.getTitle());
-    TestB b = new TestB();
-    b.setQuestion(createQuizDto.getQuestions().get(0).getQuestion());
-    a.setB(b);
-    b.setA(a);
-//    quiz.setQuestions(questions);
+    quiz.setQuestions(questions);
     return quiz;
   }
 

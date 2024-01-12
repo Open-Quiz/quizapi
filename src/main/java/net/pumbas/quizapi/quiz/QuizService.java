@@ -16,12 +16,16 @@ public class QuizService {
     this.quizMapper = quizMapper;
   }
 
-  public List<Quiz> getQuizzes() {
-    return this.quizRepository.findAll();
+  public List<QuizDto> getQuizzes() {
+    return this.quizRepository.findAll()
+        .stream()
+        .map(this.quizMapper::quizDtoFromQuiz)
+        .toList();
   }
 
-  public Quiz createQuiz(CreateQuizDto createQuizDto) {
+  public QuizDto createQuiz(CreateQuizDto createQuizDto) {
     Quiz newQuiz = this.quizMapper.quizFromCreateQuizDto(createQuizDto);
-    return this.quizRepository.save(newQuiz);
+    Quiz createdQuiz = this.quizRepository.save(newQuiz);
+    return this.quizMapper.quizDtoFromQuiz(createdQuiz);
   }
 }
