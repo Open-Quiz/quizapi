@@ -1,12 +1,14 @@
 package net.pumbas.quizapi.question;
 
-import java.util.List;
+import java.util.Set;
 import lombok.Data;
+import lombok.experimental.SuperBuilder;
 
 @Data
+@SuperBuilder
 public class CreateQuestionDto {
 
   private String question;
   private Integer correctOptionIndex;
-  private List<String> options;
+  private Set<String> options;
 }

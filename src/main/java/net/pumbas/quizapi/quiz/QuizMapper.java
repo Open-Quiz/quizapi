@@ -4,9 +4,24 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.Data;
 import net.pumbas.quizapi.question.CreateQuestionDto;
 import net.pumbas.quizapi.question.Question;
+import net.pumbas.quizapi.question.QuestionDto;
 import org.springframework.stereotype.Service;
+
+@Data
+class TestA {
+  private String title;
+  private TestB b;
+}
+
+@Data
+class TestB {
+  private String question;
+  private TestA a;
+}
+
 
 @Service
 public class QuizMapper {
@@ -23,7 +38,13 @@ public class QuizMapper {
         .map(createQuestionDto -> this.questionFromCreateQuestionDto(quiz, createQuestionDto))
         .collect(Collectors.toSet());
 
-    quiz.setQuestions(questions);
+    TestA a = new TestA();
+    a.setTitle(createQuizDto.getTitle());
+    TestB b = new TestB();
+    b.setQuestion(createQuizDto.getQuestions().get(0).getQuestion());
+    a.setB(b);
+    b.setA(a);
+//    quiz.setQuestions(questions);
     return quiz;
   }
 
@@ -36,6 +57,28 @@ public class QuizMapper {
         .correctOptionIndex(createQuestionDto.getCorrectOptionIndex())
         .options(new HashSet<>(createQuestionDto.getOptions()))
         .quiz(quiz)
+        .build();
+  }
+
+  public QuizDto quizDtoFromQuiz(Quiz quiz) {
+    return QuizDto.builder()
+        .id(quiz.getId())
+        .ownerId(quiz.getOwnerId())
+        .title(quiz.getTitle())
+        .isPublic(quiz.getIsPublic())
+        .questions(quiz.getQuestions().stream()
+            .map(this::questionDtoFromQuestion)
+            .collect(Collectors.toSet()))
+        .build();
+  }
+
+  public QuestionDto questionDtoFromQuestion(Question question) {
+    return QuestionDto.builder()
+        .id(question.getId())
+        .creatorId(question.getCreatorId())
+        .question(question.getQuestion())
+        .correctOptionIndex(question.getCorrectOptionIndex())
+        .options(question.getOptions())
         .build();
   }
 }
