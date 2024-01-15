@@ -24,7 +24,7 @@ import net.pumbas.quizapi.quiz.Quiz;
 public class Question {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
   private Long id;
 
   @Column(nullable = false)

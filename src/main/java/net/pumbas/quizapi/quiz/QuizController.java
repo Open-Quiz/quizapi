@@ -2,6 +2,7 @@ package net.pumbas.quizapi.quiz;
 
 import java.util.List;
 import net.pumbas.quizapi.config.Constants;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +26,7 @@ public class QuizController {
 
   @PostMapping
   public QuizDto createQuiz(@RequestBody CreateQuizDto createQuizDto) {
+    // TODO: Validate body
     return this.quizService.createQuiz(createQuizDto);
   }
 }

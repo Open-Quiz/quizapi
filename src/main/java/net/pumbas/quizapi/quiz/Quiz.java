@@ -26,7 +26,7 @@ import org.hibernate.annotations.FetchMode;
 public class Quiz {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
   private Long id;
 
   @Column(nullable = false)
