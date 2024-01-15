@@ -1,5 +1,6 @@
 package net.pumbas.quizapi.quiz;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import net.pumbas.quizapi.config.Constants;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -25,8 +26,7 @@ public class QuizController {
   }
 
   @PostMapping
-  public QuizDto createQuiz(@RequestBody CreateQuizDto createQuizDto) {
-    // TODO: Validate body
+  public QuizDto createQuiz(@Valid @RequestBody CreateQuizDto createQuizDto) {
     return this.quizService.createQuiz(createQuizDto);
   }
 }

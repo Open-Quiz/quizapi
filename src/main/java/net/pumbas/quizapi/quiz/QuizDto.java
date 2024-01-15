@@ -4,6 +4,7 @@ import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.pumbas.quizapi.question.QuestionDto;
 
@@ -15,6 +16,6 @@ public class QuizDto {
   private Long id;
   private String ownerId;
   private String title;
-  private boolean isPublic;
+  private Boolean isPublic;
   private Set<QuestionDto> questions;
 }

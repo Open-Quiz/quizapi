@@ -36,7 +36,6 @@ public class Quiz {
   private String title;
 
   @Column(nullable = false)
-  @ColumnDefault(value = "false")
   private Boolean isPublic;
 
   @Fetch(FetchMode.SUBSELECT)
