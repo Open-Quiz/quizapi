@@ -1,10 +1,8 @@
 package net.pumbas.quizapi.quiz;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import lombok.Data;
 import net.pumbas.quizapi.question.CreateQuestionDto;
 import net.pumbas.quizapi.question.Question;
 import net.pumbas.quizapi.question.QuestionDto;
@@ -15,7 +13,7 @@ public class QuizMapper {
   private static final String TEST_OWNER_ID = "test_owner_id";
   public Quiz quizFromCreateQuizDto(CreateQuizDto createQuizDto) {
     Quiz quiz = Quiz.builder()
-        .ownerId(TEST_OWNER_ID)
+        .creatorId(TEST_OWNER_ID)
         .title(createQuizDto.getTitle())
         .isPublic(createQuizDto.getIsPublic())
         .build();
@@ -44,9 +42,11 @@ public class QuizMapper {
   public QuizDto quizDtoFromQuiz(Quiz quiz) {
     return QuizDto.builder()
         .id(quiz.getId())
-        .ownerId(quiz.getOwnerId())
+        .creatorId(quiz.getCreatorId())
         .title(quiz.getTitle())
         .isPublic(quiz.getIsPublic())
+        .createdAt(quiz.getCreatedAt())
+        .updatedAt(quiz.getUpdatedAt())
         .questions(quiz.getQuestions().stream()
             .map(this::questionDtoFromQuestion)
             .collect(Collectors.toSet()))
@@ -59,6 +59,8 @@ public class QuizMapper {
         .creatorId(question.getCreatorId())
         .question(question.getQuestion())
         .correctOptionIndex(question.getCorrectOptionIndex())
+        .createdAt(question.getCreatedAt())
+        .updatedAt(question.getUpdatedAt())
         .options(question.getOptions())
         .build();
   }

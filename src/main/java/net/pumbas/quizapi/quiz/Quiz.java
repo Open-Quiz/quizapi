@@ -8,15 +8,17 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import java.time.LocalDateTime;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.pumbas.quizapi.question.Question;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 @Data
 @Entity
@@ -30,13 +32,19 @@ public class Quiz {
   private Long id;
 
   @Column(nullable = false)
-  private String ownerId;
+  private String creatorId;
 
   @Column(nullable = false)
   private String title;
 
   @Column(nullable = false)
   private Boolean isPublic;
+
+  @CreatedDate
+  private LocalDateTime createdAt;
+
+  @LastModifiedDate
+  private LocalDateTime updatedAt;
 
   @Fetch(FetchMode.SUBSELECT)
   @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
