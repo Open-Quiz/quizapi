@@ -1,6 +1,9 @@
 package net.pumbas.quizapi.quiz;
 
 import java.util.List;
+import net.pumbas.quizapi.user.User;
+import net.pumbas.quizapi.user.UserRepository;
+import net.pumbas.quizapi.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -8,11 +11,13 @@ import org.springframework.stereotype.Service;
 public class QuizService {
 
   private final QuizRepository quizRepository;
+  private final UserRepository userRepository;
   private final QuizMapper quizMapper;
 
   @Autowired
-  public QuizService(QuizRepository quizRepository, QuizMapper quizMapper) {
+  public QuizService(QuizRepository quizRepository, UserRepository userRepository, QuizMapper quizMapper) {
     this.quizRepository = quizRepository;
+    this.userRepository = userRepository;
     this.quizMapper = quizMapper;
   }
 
@@ -24,7 +29,8 @@ public class QuizService {
   }
 
   public QuizDto createQuiz(CreateQuizDto createQuizDto) {
-    Quiz newQuiz = this.quizMapper.quizFromCreateQuizDto(createQuizDto);
+    User creator = this.userRepository.getReferenceById(UserService.TEST_USER.getId());
+    Quiz newQuiz = this.quizMapper.quizFromCreateQuizDto(createQuizDto, creator);
     Quiz createdQuiz = this.quizRepository.save(newQuiz);
     return this.quizMapper.quizDtoFromQuiz(createdQuiz);
   }

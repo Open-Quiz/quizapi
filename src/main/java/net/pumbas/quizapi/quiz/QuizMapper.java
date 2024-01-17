@@ -20,27 +20,27 @@ public class QuizMapper {
     this.userMapper = userMapper;
   }
 
-  public Quiz quizFromCreateQuizDto(CreateQuizDto createQuizDto) {
+  public Quiz quizFromCreateQuizDto(CreateQuizDto createQuizDto, User creator) {
     Quiz quiz = Quiz.builder()
-        .creator(User.builder().id(UserService.TEST_USER.getId()).build())
+        .creator(creator)
         .title(createQuizDto.getTitle())
         .isPublic(createQuizDto.getIsPublic())
         .build();
 
     Set<Question> questions = createQuizDto.getQuestions()
         .stream()
-        .map(createQuestionDto -> this.questionFromCreateQuestionDto(quiz, createQuestionDto))
+        .map(createQuestionDto -> this.questionFromCreateQuestionDto(quiz, createQuestionDto, creator))
         .collect(Collectors.toSet());
 
     quiz.setQuestions(questions);
     return quiz;
   }
 
-  public Question questionFromCreateQuestionDto(Quiz quiz, CreateQuestionDto createQuestionDto) {
+  public Question questionFromCreateQuestionDto(Quiz quiz, CreateQuestionDto createQuestionDto, User creator) {
     // TODO: Verify that the correct option index is within the bounds of the options list
 
     return Question.builder()
-        .creator(User.builder().id(UserService.TEST_USER.getId()).build())
+        .creator(creator)
         .question(createQuestionDto.getQuestion())
         .correctOptionIndex(createQuestionDto.getCorrectOptionIndex())
         .options(new HashSet<>(createQuestionDto.getOptions()))
