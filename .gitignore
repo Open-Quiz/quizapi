@@ -38,4 +38,4 @@ out/
 
 
 .env
-database
+database/data

@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.pumbas.quizapi.question.QuestionDto;
+import net.pumbas.quizapi.user.User;
+import net.pumbas.quizapi.user.UserDto;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -16,7 +18,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 @AllArgsConstructor
 public class QuizDto {
   private Long id;
-  private String creatorId;
+  private UserDto creator;
   private String title;
   private Boolean isPublic;
   private LocalDateTime createdAt;

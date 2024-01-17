@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import net.pumbas.quizapi.user.UserDto;
 
 @Data
 @SuperBuilder
@@ -12,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 public class QuestionDto extends CreateQuestionDto {
   private Long id;
-  private String creatorId;
+  private UserDto creator;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
 }

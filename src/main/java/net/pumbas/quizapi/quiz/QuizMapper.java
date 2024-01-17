@@ -6,14 +6,23 @@ import java.util.stream.Collectors;
 import net.pumbas.quizapi.question.CreateQuestionDto;
 import net.pumbas.quizapi.question.Question;
 import net.pumbas.quizapi.question.QuestionDto;
+import net.pumbas.quizapi.user.User;
+import net.pumbas.quizapi.user.UserMapper;
+import net.pumbas.quizapi.user.UserService;
 import org.springframework.stereotype.Service;
 
 @Service
 public class QuizMapper {
-  private static final String TEST_OWNER_ID = "test_owner_id";
+
+  private final UserMapper userMapper;
+
+  public QuizMapper(UserMapper userMapper) {
+    this.userMapper = userMapper;
+  }
+
   public Quiz quizFromCreateQuizDto(CreateQuizDto createQuizDto) {
     Quiz quiz = Quiz.builder()
-        .creatorId(TEST_OWNER_ID)
+        .creator(User.builder().id(UserService.TEST_USER.getId()).build())
         .title(createQuizDto.getTitle())
         .isPublic(createQuizDto.getIsPublic())
         .build();
@@ -31,7 +40,7 @@ public class QuizMapper {
     // TODO: Verify that the correct option index is within the bounds of the options list
 
     return Question.builder()
-        .creatorId(TEST_OWNER_ID)
+        .creator(User.builder().id(UserService.TEST_USER.getId()).build())
         .question(createQuestionDto.getQuestion())
         .correctOptionIndex(createQuestionDto.getCorrectOptionIndex())
         .options(new HashSet<>(createQuestionDto.getOptions()))
@@ -42,7 +51,7 @@ public class QuizMapper {
   public QuizDto quizDtoFromQuiz(Quiz quiz) {
     return QuizDto.builder()
         .id(quiz.getId())
-        .creatorId(quiz.getCreatorId())
+        .creator(this.userMapper.userDtoFromUser(quiz.getCreator()))
         .title(quiz.getTitle())
         .isPublic(quiz.getIsPublic())
         .createdAt(quiz.getCreatedAt())
@@ -56,7 +65,7 @@ public class QuizMapper {
   public QuestionDto questionDtoFromQuestion(Question question) {
     return QuestionDto.builder()
         .id(question.getId())
-        .creatorId(question.getCreatorId())
+        .creator(this.userMapper.userDtoFromUser(question.getCreator()))
         .question(question.getQuestion())
         .correctOptionIndex(question.getCorrectOptionIndex())
         .createdAt(question.getCreatedAt())
