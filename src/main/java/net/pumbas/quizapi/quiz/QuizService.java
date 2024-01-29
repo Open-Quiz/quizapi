@@ -1,6 +1,7 @@
 package net.pumbas.quizapi.quiz;
 
 import java.util.List;
+import java.util.Optional;
 import net.pumbas.quizapi.user.User;
 import net.pumbas.quizapi.user.UserRepository;
 import net.pumbas.quizapi.user.UserService;
@@ -15,7 +16,8 @@ public class QuizService {
   private final QuizMapper quizMapper;
 
   @Autowired
-  public QuizService(QuizRepository quizRepository, UserRepository userRepository, QuizMapper quizMapper) {
+  public QuizService(QuizRepository quizRepository, UserRepository userRepository,
+      QuizMapper quizMapper) {
     this.quizRepository = quizRepository;
     this.userRepository = userRepository;
     this.quizMapper = quizMapper;
@@ -26,6 +28,11 @@ public class QuizService {
         .stream()
         .map(this.quizMapper::quizDtoFromQuiz)
         .toList();
+  }
+
+  public Optional<QuizDto> getQuiz(Long quizId) {
+    return this.quizRepository.findById(quizId)
+        .map(this.quizMapper::quizDtoFromQuiz);
   }
 
   public QuizDto createQuiz(CreateQuizDto createQuizDto) {
