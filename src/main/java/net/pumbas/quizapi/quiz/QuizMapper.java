@@ -1,14 +1,14 @@
 package net.pumbas.quizapi.quiz;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import net.pumbas.quizapi.option.Option;
+import net.pumbas.quizapi.option.OptionDto;
 import net.pumbas.quizapi.question.CreateQuestionDto;
 import net.pumbas.quizapi.question.Question;
 import net.pumbas.quizapi.question.QuestionDto;
 import net.pumbas.quizapi.user.User;
 import net.pumbas.quizapi.user.UserMapper;
-import net.pumbas.quizapi.user.UserService;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,22 +29,34 @@ public class QuizMapper {
 
     Set<Question> questions = createQuizDto.getQuestions()
         .stream()
-        .map(createQuestionDto -> this.questionFromCreateQuestionDto(quiz, createQuestionDto, creator))
+        .map(createQuestionDto -> this.questionFromCreateQuestionDto(quiz, createQuestionDto,
+            creator))
         .collect(Collectors.toSet());
 
     quiz.setQuestions(questions);
     return quiz;
   }
 
-  public Question questionFromCreateQuestionDto(Quiz quiz, CreateQuestionDto createQuestionDto, User creator) {
-    // TODO: Verify that the correct option index is within the bounds of the options list
+  public Question questionFromCreateQuestionDto(
+      Quiz quiz, CreateQuestionDto createQuestionDto, User creator
+  ) {
 
     return Question.builder()
         .creator(creator)
         .question(createQuestionDto.getQuestion())
-        .correctOptionIndex(createQuestionDto.getCorrectOptionIndex())
-        .options(new HashSet<>(createQuestionDto.getOptions()))
+        .imageUrl(createQuestionDto.getImageUrl())
+        .options(createQuestionDto.getOptions()
+            .stream()
+            .map(this::optionFromOptionDto)
+            .collect(Collectors.toSet()))
         .quiz(quiz)
+        .build();
+  }
+
+  public Option optionFromOptionDto(OptionDto optionDto) {
+    return Option.builder()
+        .option(optionDto.getOption())
+        .isCorrect(optionDto.getIsCorrect())
         .build();
   }
 
@@ -67,10 +79,20 @@ public class QuizMapper {
         .id(question.getId())
         .creator(this.userMapper.userDtoFromUser(question.getCreator()))
         .question(question.getQuestion())
-        .correctOptionIndex(question.getCorrectOptionIndex())
+        .imageUrl(question.getImageUrl())
         .createdAt(question.getCreatedAt())
         .updatedAt(question.getUpdatedAt())
-        .options(question.getOptions())
+        .options(question.getOptions()
+            .stream()
+            .map(this::optionDtoFromOption)
+            .collect(Collectors.toSet()))
+        .build();
+  }
+
+  public OptionDto optionDtoFromOption(Option option) {
+    return OptionDto.builder()
+        .option(option.getOption())
+        .isCorrect(option.getIsCorrect())
         .build();
   }
 }

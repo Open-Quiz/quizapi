@@ -2,6 +2,7 @@ package net.pumbas.quizapi.question;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
@@ -18,6 +19,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import net.pumbas.quizapi.option.Option;
 import net.pumbas.quizapi.quiz.Quiz;
 import net.pumbas.quizapi.user.User;
 import org.hibernate.annotations.Fetch;
@@ -44,8 +46,7 @@ public class Question {
   @Column(nullable = false)
   private String question;
 
-  @Column(nullable = false)
-  private Integer correctOptionIndex;
+  private String imageUrl;
 
   @CreatedDate
   private LocalDateTime createdAt;
@@ -54,7 +55,7 @@ public class Question {
   private LocalDateTime updatedAt;
 
   @ElementCollection
-  private Set<String> options;
+  private Set<Option> options;
 
   @ManyToOne
   @EqualsAndHashCode.Exclude
