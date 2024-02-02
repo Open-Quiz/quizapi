@@ -1,5 +1,6 @@
 package net.pumbas.quizapi.question;
 
+import net.pumbas.quizapi.exception.NotFoundException;
 import net.pumbas.quizapi.quiz.Quiz;
 import net.pumbas.quizapi.quiz.QuizMapper;
 import net.pumbas.quizapi.quiz.QuizService;
@@ -50,6 +51,9 @@ public class QuestionService {
       Long quizId, Long questionId, CreateQuestionDto createQuestionDto
   ) {
     Question newQuestion = this.createNewQuestion(quizId, createQuestionDto);
+    this.questionRepository.findById(questionId)
+        .orElseThrow(() -> new NotFoundException("Could not find question with id: " + questionId));
+
     newQuestion.setId(questionId);
     Question createdQuestion = this.questionRepository.save(newQuestion);
 
