@@ -9,6 +9,7 @@ import net.pumbas.quizapi.question.QuestionService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,5 +48,14 @@ public class QuizController {
       @Valid @RequestBody CreateQuestionDto createQuestionDto
   ) {
     return this.questionService.createQuestion(quizId, createQuestionDto);
+  }
+
+  @PutMapping("/{quizId}/questions/{questionId}")
+  public QuestionDto updateQuestion(
+      @PathVariable Long quizId,
+      @PathVariable Long questionId,
+      @Valid @RequestBody CreateQuestionDto createQuestionDto
+  ) {
+    return this.questionService.updateQuestion(quizId, questionId, createQuestionDto);
   }
 }
