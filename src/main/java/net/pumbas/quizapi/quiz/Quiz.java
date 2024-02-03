@@ -54,4 +54,5 @@ public class Quiz {
   @Fetch(FetchMode.SUBSELECT)
   @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<Question> questions;
+
 }

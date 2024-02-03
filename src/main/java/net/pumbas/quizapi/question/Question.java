@@ -2,16 +2,13 @@ package net.pumbas.quizapi.question;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.PreRemove;
 import java.time.LocalDateTime;
 import java.util.Set;
 import lombok.AllArgsConstructor;
@@ -22,8 +19,6 @@ import lombok.NoArgsConstructor;
 import net.pumbas.quizapi.option.Option;
 import net.pumbas.quizapi.quiz.Quiz;
 import net.pumbas.quizapi.user.User;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -61,4 +56,8 @@ public class Question {
   @EqualsAndHashCode.Exclude
   private Quiz quiz;
 
+  @PreRemove
+  public void preRemove() {
+    this.quiz = null;
+  }
 }

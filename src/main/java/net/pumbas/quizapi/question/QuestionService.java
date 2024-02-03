@@ -66,8 +66,8 @@ public class QuestionService {
 
   public void deleteQuestion(Long quizId, Long questionId) {
     this.quizService.getQuiz(quizId);
-    this.getQuestion(questionId);
+    Question question = this.getQuestion(questionId);
 
-    this.questionRepository.deleteById(questionId);
+    this.questionRepository.delete(question);
   }
 }
