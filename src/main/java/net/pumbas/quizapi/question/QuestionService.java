@@ -31,6 +31,12 @@ public class QuestionService {
     this.quizMapper = quizMapper;
   }
 
+  public Question getQuestion(Long questionId) {
+    return this.questionRepository.findById(questionId)
+        .orElseThrow(() -> new NotFoundException("Could not find question with id: " + questionId));
+
+  }
+
   private Question createNewQuestion(Long quizId, CreateQuestionDto createQuestionDto) {
     Quiz quiz = this.quizService.getQuiz(quizId);
     User creator = this.userRepository.getReferenceById(UserService.TEST_USER.getId());
@@ -51,12 +57,17 @@ public class QuestionService {
       Long quizId, Long questionId, CreateQuestionDto createQuestionDto
   ) {
     Question newQuestion = this.createNewQuestion(quizId, createQuestionDto);
-    this.questionRepository.findById(questionId)
-        .orElseThrow(() -> new NotFoundException("Could not find question with id: " + questionId));
-
+    this.getQuestion(questionId);
     newQuestion.setId(questionId);
     Question createdQuestion = this.questionRepository.save(newQuestion);
 
     return this.quizMapper.questionDtoFromQuestion(createdQuestion);
+  }
+
+  public void deleteQuestion(Long quizId, Long questionId) {
+    this.quizService.getQuiz(quizId);
+    this.getQuestion(questionId);
+
+    this.questionRepository.deleteById(questionId);
   }
 }

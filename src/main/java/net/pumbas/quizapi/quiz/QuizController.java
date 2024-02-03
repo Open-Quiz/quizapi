@@ -6,12 +6,15 @@ import net.pumbas.quizapi.config.Constants;
 import net.pumbas.quizapi.question.CreateQuestionDto;
 import net.pumbas.quizapi.question.QuestionDto;
 import net.pumbas.quizapi.question.QuestionService;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -33,6 +36,7 @@ public class QuizController {
 
 
   @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
   public QuizDto createQuiz(@Valid @RequestBody CreateQuizDto createQuizDto) {
     return this.quizService.createQuiz(createQuizDto);
   }
@@ -43,6 +47,7 @@ public class QuizController {
   }
 
   @PostMapping("/{quizId}/questions")
+  @ResponseStatus(HttpStatus.CREATED)
   public QuestionDto createQuestion(
       @PathVariable Long quizId,
       @Valid @RequestBody CreateQuestionDto createQuestionDto
@@ -57,5 +62,14 @@ public class QuizController {
       @Valid @RequestBody CreateQuestionDto createQuestionDto
   ) {
     return this.questionService.updateQuestion(quizId, questionId, createQuestionDto);
+  }
+  
+  @DeleteMapping("/{quizId}/questions/{questionId}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void deleteQuestion(
+      @PathVariable Long quizId,
+      @PathVariable Long questionId
+  ) {
+    this.questionService.deleteQuestion(quizId, questionId);
   }
 }
