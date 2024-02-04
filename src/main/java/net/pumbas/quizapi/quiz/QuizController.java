@@ -46,6 +46,12 @@ public class QuizController {
     return this.quizService.getQuizDto(quizId);
   }
 
+  @DeleteMapping("/{quizId}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void deleteQuiz(@PathVariable Long quizId) {
+    this.quizService.deleteQuiz(quizId);
+  }
+
   @PostMapping("/{quizId}/questions")
   @ResponseStatus(HttpStatus.CREATED)
   public QuestionDto createQuestion(
@@ -63,7 +69,7 @@ public class QuizController {
   ) {
     return this.questionService.updateQuestion(quizId, questionId, createQuestionDto);
   }
-  
+
   @DeleteMapping("/{quizId}/questions/{questionId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteQuestion(

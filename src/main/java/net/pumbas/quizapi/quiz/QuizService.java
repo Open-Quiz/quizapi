@@ -45,4 +45,9 @@ public class QuizService {
     Quiz createdQuiz = this.quizRepository.save(newQuiz);
     return this.quizMapper.quizDtoFromQuiz(createdQuiz);
   }
+
+  public void deleteQuiz(Long quizId) {
+    Quiz quiz = this.getQuiz(quizId);
+    this.quizRepository.delete(quiz);
+  }
 }
