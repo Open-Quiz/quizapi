@@ -74,6 +74,18 @@ public class QuizMapper {
         .build();
   }
 
+  public QuizSummaryDto quizSummaryDtoFromQuiz(Quiz quiz) {
+    return QuizSummaryDto.builder()
+        .id(quiz.getId())
+        .creator(this.userMapper.userDtoFromUser(quiz.getCreator()))
+        .title(quiz.getTitle())
+        .isPublic(quiz.getIsPublic())
+        .createdAt(quiz.getCreatedAt())
+        .updatedAt(quiz.getUpdatedAt())
+        .questionCount(quiz.getQuestions().size())
+        .build();
+  }
+
   public QuestionDto questionDtoFromQuestion(Question question) {
     return QuestionDto.builder()
         .id(question.getId())
