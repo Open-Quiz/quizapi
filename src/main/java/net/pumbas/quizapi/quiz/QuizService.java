@@ -16,17 +16,23 @@ public class QuizService {
   private final QuizMapper quizMapper;
 
   @Autowired
-  public QuizService(QuizRepository quizRepository, UserRepository userRepository,
-      QuizMapper quizMapper) {
+  public QuizService(
+      QuizRepository quizRepository,
+      UserRepository userRepository,
+      QuizMapper quizMapper
+  ) {
     this.quizRepository = quizRepository;
     this.userRepository = userRepository;
     this.quizMapper = quizMapper;
   }
 
-  public List<QuizDto> getQuizzes() {
+  public List<QuizSummaryDto> getQuizzes() {
     return this.quizRepository.findAll()
         .stream()
-        .map(this.quizMapper::quizDtoFromQuiz)
+        .map((quiz) -> {
+          int questionCount = this.quizRepository.countQuestionsById(quiz.getId());
+          return this.quizMapper.quizSummaryDtoFromQuiz(quiz, questionCount);
+        })
         .toList();
   }
 

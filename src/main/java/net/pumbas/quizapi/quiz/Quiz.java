@@ -52,7 +52,7 @@ public class Quiz {
   private LocalDateTime updatedAt;
 
   @Fetch(FetchMode.SUBSELECT)
-  @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private Set<Question> questions;
 
 }

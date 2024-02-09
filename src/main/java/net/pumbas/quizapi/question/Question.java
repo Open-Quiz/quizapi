@@ -19,6 +19,8 @@ import lombok.NoArgsConstructor;
 import net.pumbas.quizapi.option.Option;
 import net.pumbas.quizapi.quiz.Quiz;
 import net.pumbas.quizapi.user.User;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -49,6 +51,7 @@ public class Question {
   @LastModifiedDate
   private LocalDateTime updatedAt;
 
+  @Fetch(FetchMode.SUBSELECT)
   @ElementCollection
   private Set<Option> options;
 

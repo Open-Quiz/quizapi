@@ -30,7 +30,7 @@ public class QuizController {
   }
 
   @GetMapping
-  public List<QuizDto> getQuizzes() {
+  public List<QuizSummaryDto> getQuizzes() {
     return this.quizService.getQuizzes();
   }
 
