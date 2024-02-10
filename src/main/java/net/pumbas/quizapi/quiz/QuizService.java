@@ -52,6 +52,15 @@ public class QuizService {
     return this.quizMapper.quizDtoFromQuiz(createdQuiz);
   }
 
+  public QuizDto updateQuiz(Long quizId, UpdateQuizDto updateQuizDto) {
+    Quiz quiz = this.getQuiz(quizId);
+    quiz.setTitle(updateQuizDto.getTitle());
+    quiz.setIsPublic(updateQuizDto.getIsPublic());
+    
+    Quiz updatedQuiz = this.quizRepository.save(quiz);
+    return this.quizMapper.quizDtoFromQuiz(updatedQuiz);
+  }
+
   public void deleteQuiz(Long quizId) {
     Quiz quiz = this.getQuiz(quizId);
     this.quizRepository.delete(quiz);

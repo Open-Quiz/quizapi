@@ -9,6 +9,7 @@ import net.pumbas.quizapi.question.QuestionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -34,7 +35,6 @@ public class QuizController {
     return this.quizService.getQuizzes();
   }
 
-
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public QuizDto createQuiz(@Valid @RequestBody CreateQuizDto createQuizDto) {
@@ -44,6 +44,14 @@ public class QuizController {
   @GetMapping("/{quizId}")
   public QuizDto getQuiz(@PathVariable Long quizId) {
     return this.quizService.getQuizDto(quizId);
+  }
+
+  @PatchMapping("/{quizId}")
+  public QuizDto updateQuiz(
+      @PathVariable Long quizId,
+      @Valid @RequestBody UpdateQuizDto updateQuizDto
+  ) {
+    return this.quizService.updateQuiz(quizId, updateQuizDto);
   }
 
   @DeleteMapping("/{quizId}")
