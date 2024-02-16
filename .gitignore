@@ -39,3 +39,4 @@ out/
 
 .env
 database/data
+application-dev.properties
