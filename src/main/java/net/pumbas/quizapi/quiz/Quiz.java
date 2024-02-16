@@ -33,7 +33,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Quiz {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @ManyToOne

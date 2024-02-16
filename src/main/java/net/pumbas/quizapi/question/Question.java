@@ -34,7 +34,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Question {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @ManyToOne
@@ -63,4 +63,5 @@ public class Question {
   public void preRemove() {
     this.quiz = null;
   }
+
 }
