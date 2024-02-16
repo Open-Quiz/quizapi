@@ -31,6 +31,11 @@ public class GoogleUserDataProvider implements UserDataProvider {
   }
 
   @Override
+  public Provider getName() {
+    return Provider.GOOGLE;
+  }
+
+  @Override
   public UserData extractUserData(String token) {
     try {
       GoogleIdToken idToken = this.verifier.verify(token);
