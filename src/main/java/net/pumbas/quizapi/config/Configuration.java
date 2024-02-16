@@ -1,21 +1,19 @@
 package net.pumbas.quizapi.config;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import net.pumbas.quizapi.user.providers.GoogleUserDataProvider;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@Getter
-@Setter
+@Data
 @ConfigurationProperties("net.pumbas")
 public class Configuration {
 
   private Google google;
 
   /**
-   * Configuration related to {@link net.pumbas.quizapi.auth.providers.GoogleUserDataProvider}.
+   * Configuration related to {@link GoogleUserDataProvider}.
    */
-  @Getter
-  @Setter
+  @Data
   public static class Google {
 
     private String clientId;

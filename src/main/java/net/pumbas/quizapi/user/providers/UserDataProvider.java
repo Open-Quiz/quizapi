@@ -1,4 +1,4 @@
-package net.pumbas.quizapi.auth.providers;
+package net.pumbas.quizapi.user.providers;
 
 public interface UserDataProvider {
 

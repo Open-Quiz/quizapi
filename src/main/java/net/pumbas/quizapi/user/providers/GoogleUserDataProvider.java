@@ -1,4 +1,4 @@
-package net.pumbas.quizapi.auth.providers;
+package net.pumbas.quizapi.user.providers;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
