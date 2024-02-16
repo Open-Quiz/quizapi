@@ -1,7 +1,7 @@
 package net.pumbas.quizapi.quiz;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,8 +16,8 @@ import net.pumbas.quizapi.question.CreateQuestionDto;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class CreateQuizDto extends UpdateQuizDto {
-  
+
   @Valid
-  @Size(min = 1, message = "A quiz must have at least one question")
-  private List<CreateQuestionDto> questions;
+  private List<CreateQuestionDto> questions = new ArrayList<>();
+
 }
