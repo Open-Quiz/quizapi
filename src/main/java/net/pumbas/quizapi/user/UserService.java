@@ -1,6 +1,8 @@
 package net.pumbas.quizapi.user;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
+import net.pumbas.quizapi.config.Configuration;
 import net.pumbas.quizapi.user.providers.UserData;
 import net.pumbas.quizapi.user.providers.UserDataProvider;
 import net.pumbas.quizapi.user.providers.UserDataProvider.Provider;
@@ -22,16 +24,19 @@ public class UserService implements CommandLineRunner {
       .build();
 
   private final UserMapper userMapper;
+  private final Configuration configuration;
   private final UserRepository userRepository;
   private final UserDataProviderFactory userDataProviderFactory;
 
   @Autowired
   public UserService(
       UserMapper userMapper,
+      Configuration configuration,
       UserRepository userRepository,
       UserDataProviderFactory userDataProviderFactory
   ) {
     this.userMapper = userMapper;
+    this.configuration = configuration;
     this.userRepository = userRepository;
     this.userDataProviderFactory = userDataProviderFactory;
   }
@@ -51,7 +56,15 @@ public class UserService implements CommandLineRunner {
     User user = oUser.map(existingUser -> this.refreshUser(existingUser, userData))
         .orElseGet(() -> this.createUser(userDataProvider.getName(), userData));
 
-    return null;
+    LocalDateTime now = LocalDateTime.now();
+
+    return LoginDto.builder()
+        .user(this.userMapper.userDtoFromUser(user))
+        .accessToken("accessToken") // TODO: Generate
+        .refreshToken("accessToken") // TODO: Generate
+        .accessTokenExpiresAt(now.plusSeconds(this.configuration.getAccessTokenValiditySeconds()))
+        .refreshTokenExpiresAt(now.plusSeconds(this.configuration.getRefreshTokenValiditySeconds()))
+        .build();
   }
 
 

@@ -8,6 +8,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("net.pumbas")
 public class Configuration {
 
+  private long accessTokenValiditySeconds;
+  private long refreshTokenValiditySeconds;
+
   private Google google;
 
   /**

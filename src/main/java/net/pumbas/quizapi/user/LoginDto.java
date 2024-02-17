@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class LoginDto {
 
-  UserDto userDto;
+  UserDto user;
   String accessToken;
   String refreshToken;
   LocalDateTime accessTokenExpiresAt;
