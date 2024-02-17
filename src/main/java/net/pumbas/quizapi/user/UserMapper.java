@@ -12,6 +12,7 @@ public class UserMapper {
         .id(user.getId())
         .username(user.getUsername())
         .pictureUrl(user.getPictureUrl())
+        .provider(user.getProvider())
         .build();
   }
 

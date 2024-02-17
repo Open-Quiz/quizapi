@@ -60,8 +60,8 @@ public class UserService implements CommandLineRunner {
 
     return LoginDto.builder()
         .user(this.userMapper.userDtoFromUser(user))
-        .accessToken("accessToken") // TODO: Generate
-        .refreshToken("accessToken") // TODO: Generate
+        .accessToken("xxxxxxxxxxxxx") // TODO: Generate
+        .refreshToken("xxxxxxxxxxxxx") // TODO: Generate
         .accessTokenExpiresAt(now.plusSeconds(this.configuration.getAccessTokenExpirySeconds()))
         .refreshTokenExpiresAt(now.plusSeconds(this.configuration.getRefreshTokenExpirySeconds()))
         .build();
