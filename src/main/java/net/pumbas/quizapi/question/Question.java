@@ -9,7 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PreRemove;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,10 +46,10 @@ public class Question {
   private String imageUrl;
 
   @CreatedDate
-  private LocalDateTime createdAt;
+  private ZonedDateTime createdAt;
 
   @LastModifiedDate
-  private LocalDateTime updatedAt;
+  private ZonedDateTime updatedAt;
 
   @Fetch(FetchMode.SUBSELECT)
   @ElementCollection

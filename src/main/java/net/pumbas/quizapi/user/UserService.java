@@ -1,6 +1,7 @@
 package net.pumbas.quizapi.user;
 
-import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 import net.pumbas.quizapi.config.Configuration;
 import net.pumbas.quizapi.user.providers.UserData;
@@ -56,7 +57,7 @@ public class UserService implements CommandLineRunner {
     User user = oUser.map(existingUser -> this.refreshUser(existingUser, userData))
         .orElseGet(() -> this.createUser(userDataProvider.getName(), userData));
 
-    LocalDateTime now = LocalDateTime.now();
+    ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
 
     return LoginDto.builder()
         .user(this.userMapper.userDtoFromUser(user))

@@ -1,6 +1,6 @@
 package net.pumbas.quizapi.user;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +15,7 @@ public class LoginDto {
   UserDto user;
   String accessToken;
   String refreshToken;
-  LocalDateTime accessTokenExpiresAt;
-  LocalDateTime refreshTokenExpiresAt;
+  ZonedDateTime accessTokenExpiresAt;
+  ZonedDateTime refreshTokenExpiresAt;
 
 }

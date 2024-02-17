@@ -10,7 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,10 +46,10 @@ public class Quiz {
   private Boolean isPublic;
 
   @CreatedDate
-  private LocalDateTime createdAt;
+  private ZonedDateTime createdAt;
 
   @LastModifiedDate
-  private LocalDateTime updatedAt;
+  private ZonedDateTime updatedAt;
 
   @Fetch(FetchMode.SUBSELECT)
   @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
