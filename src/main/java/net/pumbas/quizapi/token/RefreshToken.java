@@ -10,12 +10,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.pumbas.quizapi.user.User;
+import org.springframework.data.annotation.CreatedDate;
 
 @Data
 @Entity
@@ -40,6 +43,13 @@ public class RefreshToken {
   private RefreshTokenState state;
 
   /**
+   * The time that the refresh token was created. This is used for auditing purposes as the token
+   * expiration is stored in the refresh token JWT itself.
+   */
+  @CreatedDate
+  private ZonedDateTime createdAt;
+
+  /**
    * The user that the refresh token is associated with.
    */
   @ManyToOne(fetch = FetchType.EAGER)
@@ -51,12 +61,12 @@ public class RefreshToken {
    * be used.
    */
   @ManyToOne(fetch = FetchType.LAZY)
-  private RefreshToken originalToken;
+  private RefreshToken originalToken = null;
 
   /**
    * All the refresh tokens that were created from this original token.
    */
   @OneToMany(mappedBy = "originalToken", fetch = FetchType.LAZY)
-  private Set<RefreshToken> childTokens;
+  private Set<RefreshToken> childTokens = Collections.emptySet();
 
 }
