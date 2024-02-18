@@ -40,7 +40,7 @@ public class RefreshToken {
    */
   @Column(nullable = false)
   @Enumerated(value = EnumType.STRING)
-  private RefreshTokenState state;
+  private RefreshTokenState state = RefreshTokenState.UNUSED;
 
   /**
    * The time that the refresh token was created. This is used for auditing purposes as the token
@@ -61,7 +61,7 @@ public class RefreshToken {
    * be used.
    */
   @ManyToOne(fetch = FetchType.LAZY)
-  private RefreshToken originalToken = null;
+  private RefreshToken originalToken;
 
   /**
    * All the refresh tokens that were created from this original token.
