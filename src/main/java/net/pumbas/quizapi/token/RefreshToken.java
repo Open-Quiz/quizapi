@@ -38,6 +38,7 @@ public class RefreshToken {
    * The current state of the refresh token. This is used to determine if the token is still valid
    * and to detect refresh token reuse.
    */
+  @Builder.Default
   @Column(nullable = false)
   @Enumerated(value = EnumType.STRING)
   private RefreshTokenState state = RefreshTokenState.UNUSED;
@@ -66,6 +67,7 @@ public class RefreshToken {
   /**
    * All the refresh tokens that were created from this original token.
    */
+  @Builder.Default
   @OneToMany(mappedBy = "originalToken", fetch = FetchType.LAZY)
   private Set<RefreshToken> childTokens = Collections.emptySet();
 

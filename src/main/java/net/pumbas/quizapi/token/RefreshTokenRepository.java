@@ -16,7 +16,7 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
    */
   @Query("""
       UPDATE RefreshToken r SET r.state = 'INVALIDATED'
-      WHERE (r.id = ?1 OR r.originalToken = ?1) AND r.state = 'UNUSED'
+      WHERE (r.id = ?1 OR r.originalToken.id = ?1) AND r.state = 'UNUSED'
       """
   )
   void invalidateRefreshTokenFamily(Long originalId);
