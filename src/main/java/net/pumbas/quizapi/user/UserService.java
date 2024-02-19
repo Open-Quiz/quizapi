@@ -4,6 +4,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 import net.pumbas.quizapi.config.Configuration;
+import net.pumbas.quizapi.exception.NotFoundException;
 import net.pumbas.quizapi.user.providers.UserData;
 import net.pumbas.quizapi.user.providers.UserDataProvider;
 import net.pumbas.quizapi.user.providers.UserDataProvider.Provider;
@@ -77,6 +78,15 @@ public class UserService implements CommandLineRunner {
   public User createUser(Provider provider, UserData userData) {
     User user = this.userMapper.userFromUserData(provider, userData);
     return this.userRepository.save(user);
+  }
+
+  public User getUser(Long userId) {
+    return this.userRepository.findById(userId)
+        .orElseThrow(() -> new NotFoundException("Could not find user with id: " + userId));
+  }
+
+  public User getUserReference(Long userId) {
+    return this.userRepository.getReferenceById(userId);
   }
 
 }

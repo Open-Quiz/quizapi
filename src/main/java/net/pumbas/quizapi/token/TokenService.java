@@ -1,7 +1,6 @@
 package net.pumbas.quizapi.token;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -12,9 +11,10 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import javax.crypto.SecretKey;
 import net.pumbas.quizapi.config.Configuration;
+import net.pumbas.quizapi.exception.NotFoundException;
 import net.pumbas.quizapi.exception.UnauthorizedException;
 import net.pumbas.quizapi.user.User;
-import net.pumbas.quizapi.user.UserRepository;
+import net.pumbas.quizapi.user.UserService;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,20 +22,52 @@ public class TokenService {
 
   public static final String API_ISSUER = "open-quiz-api";
   private final RefreshTokenRepository refreshTokenRepository;
-  private final UserRepository userRepository;
   private final Configuration configuration;
+  private final UserService userService;
   private final SecretKey jwtSecret;
 
   public TokenService(
       RefreshTokenRepository refreshTokenRepository,
-      UserRepository userRepository,
-      Configuration configuration
+      Configuration configuration,
+      UserService userService
   ) {
     this.refreshTokenRepository = refreshTokenRepository;
-    this.userRepository = userRepository;
     this.configuration = configuration;
+    this.userService = userService;
+
     byte[] keyBytes = Decoders.BASE64.decode(this.configuration.getJwtSecret());
     this.jwtSecret = Keys.hmacShaKeyFor(keyBytes);
+  }
+
+  /**
+   * Get the refresh token with the provided id.
+   *
+   * @param refreshTokenId The id of the refresh token to get
+   * @return The refresh token with the provided id
+   * @throws UnauthorizedException If no refresh token could be found with the provided id
+   */
+  public RefreshToken getRefreshToken(Long refreshTokenId) {
+    return this.refreshTokenRepository.findById(refreshTokenId)
+        .orElseThrow(() -> new UnauthorizedException(
+            "Could not find refresh token with id: " + refreshTokenId));
+  }
+
+  /**
+   * Validate that the provided access token JWS is valid and that the user associated with it
+   * exists.
+   *
+   * @param accessTokenJws The JWS that represents the access token
+   * @return The user associated with the access token
+   * @throws UnauthorizedException If the access token is not valid
+   */
+  public User validateAccessToken(String accessTokenJws) {
+    Long userId = this.validateJws(accessTokenJws, "access token");
+    try {
+      return this.userService.getUser(userId);
+    } catch (NotFoundException e) {
+      throw new UnauthorizedException(
+          "The user associated with the access token could not be found: " + userId, e);
+    }
   }
 
   /**
@@ -54,11 +86,8 @@ public class TokenService {
    * @throws UnauthorizedException If the refresh token is not valid or has already been used
    */
   public String validateRefreshToken(String refreshTokenJws) {
-    Long refreshTokenId = this.getRefreshTokenIdFromJws(refreshTokenJws);
-
-    RefreshToken refreshToken = this.refreshTokenRepository.findById(refreshTokenId)
-        .orElseThrow(() -> new UnauthorizedException(
-            "No refresh token could not be found with the id: '%s'".formatted(refreshTokenId)));
+    Long refreshTokenId = this.validateJws(refreshTokenJws, "refresh token");
+    RefreshToken refreshToken = this.getRefreshToken(refreshTokenId);
 
     if (refreshToken.getState() == RefreshTokenState.INVALIDATED_USED) {
       // This token has already been used! This is a potential refresh token reuse attack!!!
@@ -79,43 +108,52 @@ public class TokenService {
     this.refreshTokenRepository.save(refreshToken);
 
     return this.generateRotatedRefreshToken(refreshToken);
-
   }
 
   /**
-   * Extract the id of the refresh token from the JWS and verify that the JWS is valid and not
-   * expired.
+   * Validate that the provided JWS is valid and hasn't expired and return the parsed id stored in
+   * the subject of the JWS.
    *
-   * @param refreshTokenJws The JWS that represents the refresh token
-   * @return The id of the refresh token
-   * @throws UnauthorizedException If the refresh token is invalid or has expired
+   * @param jws       The JWS to validate
+   * @param tokenName The name of the token to use in error messages
+   * @return The id stored in the subject of the JWS
+   * @throws UnauthorizedException If the JWS is not valid or has expired
    */
-  private Long getRefreshTokenIdFromJws(String refreshTokenJws) {
+  private Long validateJws(String jws, String tokenName) {
     try {
-      Jws<Claims> jws = Jwts.parser()
+      Claims claims = Jwts.parser()
           .verifyWith(this.jwtSecret)
           .build()
-          .parseSignedClaims(refreshTokenJws);
+          .parseSignedClaims(jws)
+          .getPayload();
 
-      Date expiration = jws.getPayload().getExpiration();
+      if (!API_ISSUER.equals(claims.getIssuer())) {
+        throw new UnauthorizedException("The %s was not issued by this API".formatted(tokenName));
+      }
+
+      Date expiration = claims.getExpiration();
       if (expiration == null) {
-        throw new UnauthorizedException("The refresh token does not have an expiration date");
+        throw new UnauthorizedException(
+            "The %s does not have an expiration date".formatted(tokenName));
       }
 
       // Make sure we check the expiration in UTC
       Date now = Date.from(ZonedDateTime.now(ZoneOffset.UTC).toInstant());
       if (expiration.before(now)) {
-        throw new UnauthorizedException("The refresh token has expired");
+        throw new UnauthorizedException("The %s has expired".formatted(tokenName));
       }
 
-      return Long.parseLong(jws.getPayload().getSubject());
+      return Long.parseLong(claims.getSubject());
     } catch (UnsupportedJwtException e) {
-      throw new UnauthorizedException("The refresh token is not a valid JWS", e);
+      throw new UnauthorizedException("The %s is not a valid JWS".formatted(tokenName), e);
     } catch (JwtException e) {
-      throw new UnauthorizedException("The refresh token could not be verified successfully", e);
+      throw new UnauthorizedException(
+          "The %s could not be verified successfully".formatted(tokenName), e);
     } catch (NumberFormatException e) {
-      throw new UnauthorizedException("The id of the refresh token is not a valid number", e);
+      throw new UnauthorizedException(
+          "The subject of the %s is not a valid number".formatted(tokenName), e);
     }
+
   }
 
   /**
@@ -146,7 +184,7 @@ public class TokenService {
    * @return The JWS that represents the refresh token
    */
   public String generateNewRefreshToken(Long userId) {
-    User user = this.userRepository.getReferenceById(userId);
+    User user = this.userService.getUserReference(userId);
 
     RefreshToken newRefreshToken = RefreshToken.builder()
         .user(user)
