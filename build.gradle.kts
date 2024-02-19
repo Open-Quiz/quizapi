@@ -30,6 +30,10 @@ dependencies {
     implementation("org.postgresql:postgresql:42.7.1")
     implementation("com.google.api-client:google-api-client:2.0.0")
 
+    implementation("io.jsonwebtoken:jjwt-api:0.12.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.5")
+
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     annotationProcessor("org.projectlombok:lombok")
@@ -40,4 +44,14 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.create("generateJwtSecret") {
+    dependsOn("classes")
+    doLast {
+        javaexec {
+            mainClass = "net.pumbas.quizapi.JwtSecretGenerator"
+            classpath = sourceSets.main.get().runtimeClasspath
+        }
+    }
 }
