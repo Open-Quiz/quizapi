@@ -2,6 +2,9 @@ package net.pumbas.quizapi.user;
 
 import net.pumbas.quizapi.config.Constants;
 import net.pumbas.quizapi.exception.UnauthorizedException;
+import net.pumbas.quizapi.user.UserService.LoginResult;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +21,7 @@ public class UserController {
   }
 
   @GetMapping("/login")
-  public LoginDto login(@RequestHeader("Authorization") String authorization) {
+  public ResponseEntity<LoginDto> login(@RequestHeader("Authorization") String authorization) {
     String[] tokenParts = authorization.split(" ");
 
     if (tokenParts.length != 2) {
@@ -30,7 +33,9 @@ public class UserController {
     String provider = tokenParts[0];
     String token = tokenParts[1];
 
-    return this.userService.login(provider, token);
+    LoginResult loginResult = this.userService.login(provider, token);
+    return ResponseEntity.status(loginResult.isNewUser() ? HttpStatus.CREATED : HttpStatus.OK)
+        .body(loginResult.getLoginDto());
   }
 
 }

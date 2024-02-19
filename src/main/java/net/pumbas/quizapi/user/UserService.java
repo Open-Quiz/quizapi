@@ -1,10 +1,9 @@
 package net.pumbas.quizapi.user;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Optional;
-import net.pumbas.quizapi.config.Configuration;
+import lombok.Data;
 import net.pumbas.quizapi.exception.NotFoundException;
+import net.pumbas.quizapi.token.TokenService;
 import net.pumbas.quizapi.user.providers.UserData;
 import net.pumbas.quizapi.user.providers.UserDataProvider;
 import net.pumbas.quizapi.user.providers.UserDataProvider.Provider;
@@ -26,45 +25,46 @@ public class UserService implements CommandLineRunner {
       .build();
 
   private final UserMapper userMapper;
-  private final Configuration configuration;
+  private final TokenService tokenService;
   private final UserRepository userRepository;
   private final UserDataProviderFactory userDataProviderFactory;
 
   @Autowired
   public UserService(
       UserMapper userMapper,
-      Configuration configuration,
+      TokenService tokenService,
       UserRepository userRepository,
       UserDataProviderFactory userDataProviderFactory
   ) {
     this.userMapper = userMapper;
-    this.configuration = configuration;
+    this.tokenService = tokenService;
     this.userRepository = userRepository;
     this.userDataProviderFactory = userDataProviderFactory;
   }
 
   @Override
-  public void run(String... args) throws Exception {
+  public void run(String... args) {
     this.userRepository.save(TEST_USER);
   }
 
-  public LoginDto login(String provider, String token) {
+  public LoginResult login(String provider, String token) {
     UserDataProvider userDataProvider = this.userDataProviderFactory.getProvider(provider);
     UserData userData = userDataProvider.extractUserData(token);
 
     Optional<User> oUser = this.userRepository.getUserByProvider(
         userDataProvider.getName(), userData.getProviderId());
 
+    boolean isNewUser = oUser.isEmpty();
     User user = oUser.map(existingUser -> this.refreshUser(existingUser, userData))
         .orElseGet(() -> this.createUser(userDataProvider.getName(), userData));
 
-    ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
-
-    return LoginDto.builder()
+    LoginDto loginDto = LoginDto.builder()
         .user(this.userMapper.userDtoFromUser(user))
-        .accessToken("xxxxxxxxxxxxx") // TODO: Generate
-        .refreshToken("xxxxxxxxxxxxx") // TODO: Generate
+        .accessToken(this.tokenService.generateAccessToken(user.getId()))
+        .refreshToken(this.tokenService.generateNewRefreshToken(user.getId()))
         .build();
+
+    return new LoginResult(isNewUser, loginDto);
   }
 
 
@@ -87,6 +87,14 @@ public class UserService implements CommandLineRunner {
 
   public User getUserReference(Long userId) {
     return this.userRepository.getReferenceById(userId);
+  }
+
+  @Data
+  public static class LoginResult {
+
+    private final boolean isNewUser;
+    private final LoginDto loginDto;
+
   }
 
 }
