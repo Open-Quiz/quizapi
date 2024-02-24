@@ -42,7 +42,6 @@ public abstract class AnnotatedFilter<A extends Annotation> extends OncePerReque
                   request.getRequestURI()));
       return; // Sanity check. This shouldn't happen due to the shouldNotFilter method
     }
-
     this.doFilter(request, response, filterChain, annotation);
   }
 
