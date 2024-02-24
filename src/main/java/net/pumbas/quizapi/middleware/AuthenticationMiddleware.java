@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.NoSuchElementException;
 import net.pumbas.quizapi.exception.UnauthorizedException;
 import net.pumbas.quizapi.middleware.annotations.Secured;
 import net.pumbas.quizapi.token.TokenService;
@@ -52,7 +53,11 @@ public class AuthenticationMiddleware extends AnnotatedFilter<Secured> {
    */
   public static class AuthContext {
 
-    private static final ThreadLocal<User> CURRENT_USER = new ThreadLocal<>();
+    private static final ThreadLocal<User> CURRENT_USER = ThreadLocal.withInitial(() -> {
+      throw new NoSuchElementException(
+          "To access the current user, you must annotate the resource or class with @%s"
+              .formatted(Secured.class.getSimpleName()));
+    });
 
     public static User getCurrentUser() {
       return CURRENT_USER.get();

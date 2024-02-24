@@ -22,21 +22,17 @@ public class ExceptionMiddleware extends OncePerRequestFilter {
       HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain
   ) throws IOException {
-    this.logger.info(
-        "Exception middleware: %s %s".formatted(request.getMethod(), request.getRequestURI()));
-
     try {
       filterChain.doFilter(request, response);
     } catch (ResponseStatusException e) {
-      this.logger.info("Resolved exception: " + e);
-
       response.setStatus(e.getStatusCode().value());
       String reason = e.getReason();
       if (reason != null) {
         response.getWriter().write(reason);
       }
     } catch (Exception e) {
-      this.logger.error(e);
+      this.logger.error("Resolved exception in %s %s: %s"
+          .formatted(request.getMethod(), request.getRequestURI(), e));
 
       response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
       response.getWriter().write("There was an unexpected error while processing your request");
