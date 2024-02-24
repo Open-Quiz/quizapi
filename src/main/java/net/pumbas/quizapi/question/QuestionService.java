@@ -6,7 +6,6 @@ import net.pumbas.quizapi.quiz.QuizMapper;
 import net.pumbas.quizapi.quiz.QuizService;
 import net.pumbas.quizapi.user.User;
 import net.pumbas.quizapi.user.UserRepository;
-import net.pumbas.quizapi.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,29 +33,31 @@ public class QuestionService {
   public Question getQuestion(Long questionId) {
     return this.questionRepository.findById(questionId)
         .orElseThrow(() -> new NotFoundException("Could not find question with id: " + questionId));
-
   }
 
-  private Question createNewQuestion(Long quizId, CreateQuestionDto createQuestionDto) {
-    Quiz quiz = this.quizService.getQuiz(quizId);
-    User creator = this.userRepository.getReferenceById(UserService.TEST_USER.getId());
+  private Question createNewQuestion(
+      Long quizId, CreateQuestionDto createQuestionDto, User requester
+  ) {
+    Quiz quiz = this.quizService.getQuiz(quizId, requester, true);
 
     return this.quizMapper.questionFromCreateQuestionDto(
-        quiz, createQuestionDto, creator
+        quiz, createQuestionDto, requester
     );
   }
 
-  public QuestionDto createQuestion(Long quizId, CreateQuestionDto createQuestionDto) {
-    Question newQuestion = this.createNewQuestion(quizId, createQuestionDto);
+  public QuestionDto createQuestion(
+      Long quizId, CreateQuestionDto createQuestionDto, User requester
+  ) {
+    Question newQuestion = this.createNewQuestion(quizId, createQuestionDto, requester);
     Question createdQuestion = this.questionRepository.save(newQuestion);
 
     return this.quizMapper.questionDtoFromQuestion(createdQuestion);
   }
 
   public QuestionDto updateQuestion(
-      Long quizId, Long questionId, CreateQuestionDto createQuestionDto
+      Long quizId, Long questionId, CreateQuestionDto createQuestionDto, User requester
   ) {
-    Question newQuestion = this.createNewQuestion(quizId, createQuestionDto);
+    Question newQuestion = this.createNewQuestion(quizId, createQuestionDto, requester);
     this.getQuestion(questionId);
     newQuestion.setId(questionId);
     Question createdQuestion = this.questionRepository.save(newQuestion);
@@ -64,8 +65,8 @@ public class QuestionService {
     return this.quizMapper.questionDtoFromQuestion(createdQuestion);
   }
 
-  public void deleteQuestion(Long quizId, Long questionId) {
-    this.quizService.getQuiz(quizId);
+  public void deleteQuestion(Long quizId, Long questionId, User requester) {
+    this.quizService.getQuiz(quizId, requester, true);
     Question question = this.getQuestion(questionId);
 
     this.questionRepository.delete(question);

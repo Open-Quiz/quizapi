@@ -39,27 +39,27 @@ public class QuizController {
 
   @GetMapping
   public List<QuizSummaryDto> getQuizzes() {
-    User currentUser = AuthContext.getCurrentUser();
-    this.logger.info("Get quizzes for '%s'".formatted(currentUser.getUsername()));
-    return this.quizService.getQuizzes();
+    User requester = AuthContext.getCurrentUser();
+    this.logger.info("Get quizzes for '%s'".formatted(requester.getUsername()));
+    return this.quizService.getQuizzes(requester);
   }
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public QuizDto createQuiz(@Valid @RequestBody CreateQuizDto createQuizDto) {
-    User currentUser = AuthContext.getCurrentUser();
+    User requester = AuthContext.getCurrentUser();
     this.logger.info(
-        "Create quiz: %s for '%s'".formatted(createQuizDto, currentUser.getUsername()));
+        "Create quiz: %s for '%s'".formatted(createQuizDto, requester.getUsername()));
 
-    return this.quizService.createQuiz(createQuizDto);
+    return this.quizService.createQuiz(createQuizDto, requester);
   }
 
   @GetMapping("/{quizId}")
   public QuizDto getQuiz(@PathVariable Long quizId) {
-    User currentUser = AuthContext.getCurrentUser();
-    this.logger.info("Get quiz: %s for '%s'".formatted(quizId, currentUser.getUsername()));
+    User requester = AuthContext.getCurrentUser();
+    this.logger.info("Get quiz: %s for '%s'".formatted(quizId, requester.getUsername()));
 
-    return this.quizService.getQuizDto(quizId);
+    return this.quizService.getQuizDto(quizId, requester);
   }
 
   @PatchMapping("/{quizId}")
@@ -67,21 +67,21 @@ public class QuizController {
       @PathVariable Long quizId,
       @Valid @RequestBody UpdateQuizDto updateQuizDto
   ) {
-    User currentUser = AuthContext.getCurrentUser();
+    User requester = AuthContext.getCurrentUser();
     this.logger.info("Update quiz: %s with %s for '%s'"
-        .formatted(quizId, updateQuizDto, currentUser.getUsername()));
+        .formatted(quizId, updateQuizDto, requester.getUsername()));
 
-    return this.quizService.updateQuiz(quizId, updateQuizDto);
+    return this.quizService.updateQuiz(quizId, updateQuizDto, requester);
   }
 
   @DeleteMapping("/{quizId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteQuiz(@PathVariable Long quizId) {
-    User currentUser = AuthContext.getCurrentUser();
+    User requester = AuthContext.getCurrentUser();
     this.logger.info(
-        "Delete quiz: %s for '%s'".formatted(quizId, currentUser.getUsername()));
+        "Delete quiz: %s for '%s'".formatted(quizId, requester.getUsername()));
 
-    this.quizService.deleteQuiz(quizId);
+    this.quizService.deleteQuiz(quizId, requester);
   }
 
   @PostMapping("/{quizId}/questions")
@@ -90,11 +90,11 @@ public class QuizController {
       @PathVariable Long quizId,
       @Valid @RequestBody CreateQuestionDto createQuestionDto
   ) {
-    User currentUser = AuthContext.getCurrentUser();
+    User requester = AuthContext.getCurrentUser();
     this.logger.info("Create question for quiz: %s with %s for '%s'"
-        .formatted(quizId, createQuestionDto, currentUser.getUsername()));
+        .formatted(quizId, createQuestionDto, requester.getUsername()));
 
-    return this.questionService.createQuestion(quizId, createQuestionDto);
+    return this.questionService.createQuestion(quizId, createQuestionDto, requester);
   }
 
   @PutMapping("/{quizId}/questions/{questionId}")
@@ -103,11 +103,11 @@ public class QuizController {
       @PathVariable Long questionId,
       @Valid @RequestBody CreateQuestionDto createQuestionDto
   ) {
-    User currentUser = AuthContext.getCurrentUser();
+    User requester = AuthContext.getCurrentUser();
     this.logger.info("Update question: %s for quiz: %s with %s for '%s'"
-        .formatted(questionId, quizId, createQuestionDto, currentUser.getUsername()));
+        .formatted(questionId, quizId, createQuestionDto, requester.getUsername()));
 
-    return this.questionService.updateQuestion(quizId, questionId, createQuestionDto);
+    return this.questionService.updateQuestion(quizId, questionId, createQuestionDto, requester);
   }
 
   @DeleteMapping("/{quizId}/questions/{questionId}")
@@ -116,11 +116,11 @@ public class QuizController {
       @PathVariable Long quizId,
       @PathVariable Long questionId
   ) {
-    User currentUser = AuthContext.getCurrentUser();
+    User requester = AuthContext.getCurrentUser();
     this.logger.info("Delete question: %s for quiz: %s for '%s'"
-        .formatted(questionId, quizId, currentUser.getUsername()));
-    
-    this.questionService.deleteQuestion(quizId, questionId);
+        .formatted(questionId, quizId, requester.getUsername()));
+
+    this.questionService.deleteQuestion(quizId, questionId, requester);
   }
 
 }
