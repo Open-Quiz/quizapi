@@ -5,7 +5,7 @@ import net.pumbas.quizapi.exception.UnauthorizedException;
 import net.pumbas.quizapi.user.LoginService.LoginResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,7 +20,7 @@ public class UserController {
     this.loginService = loginService;
   }
 
-  @GetMapping("/login")
+  @PostMapping("/login")
   public ResponseEntity<LoginDto> login(@RequestHeader("Authorization") String authorization) {
     String[] tokenParts = authorization.split(" ");
 
