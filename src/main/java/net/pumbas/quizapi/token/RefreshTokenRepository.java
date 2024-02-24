@@ -1,6 +1,8 @@
 package net.pumbas.quizapi.token;
 
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
@@ -14,6 +16,8 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
    *
    * @param originalId The id of the refresh token that is the root of the family
    */
+  @Transactional
+  @Modifying
   @Query("""
       UPDATE RefreshToken r SET r.state = 'INVALIDATED'
       WHERE (r.id = ?1 OR r.originalToken.id = ?1) AND r.state = 'UNUSED'

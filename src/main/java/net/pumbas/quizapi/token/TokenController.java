@@ -1,11 +1,13 @@
 package net.pumbas.quizapi.token;
 
+import jakarta.validation.Valid;
 import net.pumbas.quizapi.config.Constants;
 import net.pumbas.quizapi.exception.UnauthorizedException;
 import net.pumbas.quizapi.token.LoginService.LoginResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,8 +43,19 @@ public class TokenController {
   }
 
   @PostMapping("/refresh")
-  public ResponseEntity<TokenDto> refreshToken() {
-    return null;
+  public ResponseEntity<TokenDto> refreshToken(
+      @Valid @RequestBody RefreshTokenDto refreshTokenDto
+  ) {
+    RefreshToken refreshToken = this.tokenService.validateRefreshToken(
+        refreshTokenDto.getRefreshToken()
+    );
+
+    TokenDto tokens = TokenDto.builder()
+        .accessToken(this.tokenService.generateAccessToken(refreshToken.getUser().getId()))
+        .refreshToken(this.tokenService.generateRotatedRefreshToken(refreshToken))
+        .build();
+
+    return ResponseEntity.ok(tokens);
   }
 
 

@@ -15,6 +15,8 @@ import net.pumbas.quizapi.exception.NotFoundException;
 import net.pumbas.quizapi.exception.UnauthorizedException;
 import net.pumbas.quizapi.user.User;
 import net.pumbas.quizapi.user.UserService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,6 +27,7 @@ public class TokenService {
   private final Configuration configuration;
   private final UserService userService;
   private final SecretKey jwtSecret;
+  private final Log logger = LogFactory.getLog(TokenService.class);
 
   public TokenService(
       RefreshTokenRepository refreshTokenRepository,
@@ -71,8 +74,7 @@ public class TokenService {
   }
 
   /**
-   * Validate that the provided refresh token JWS is valid and has not been used before. If the
-   * refresh token is valid then a new rotated refresh token is returned.
+   * Validate that the provided refresh token JWS is valid and has not been used before.
    * <p>
    * If the token has already been used ({@link RefreshTokenState#INVALIDATED_USED}), then this
    * could be a potential refresh token reuse attack and all the tokens in the same token family are
@@ -82,15 +84,17 @@ public class TokenService {
    * the token is marked as used but no other action is taken.
    *
    * @param refreshTokenJws The JWS that represents the refresh token
-   * @return The new rotated refresh token JWS
+   * @return The refresh token entity
    * @throws UnauthorizedException If the refresh token is not valid or has already been used
    */
-  public String validateRefreshToken(String refreshTokenJws) {
+  public RefreshToken validateRefreshToken(String refreshTokenJws) {
     Long refreshTokenId = this.validateJws(refreshTokenJws, "refresh token");
     RefreshToken refreshToken = this.getRefreshToken(refreshTokenId);
 
     if (refreshToken.getState() == RefreshTokenState.INVALIDATED_USED) {
       // This token has already been used! This is a potential refresh token reuse attack!!!
+      this.logger.warn("Refresh token reuse: Refresh token %s for user '%s' has already been used"
+          .formatted(refreshTokenJws, refreshToken.getUser().getUsername()));
 
       Long originalTokenId = this.getOriginalToken(refreshToken).getId();
       this.refreshTokenRepository.invalidateRefreshTokenFamily(originalTokenId);
@@ -105,9 +109,7 @@ public class TokenService {
     }
 
     refreshToken.setState(RefreshTokenState.INVALIDATED_USED);
-    this.refreshTokenRepository.save(refreshToken);
-
-    return this.generateRotatedRefreshToken(refreshToken);
+    return this.refreshTokenRepository.save(refreshToken);
   }
 
   /**
