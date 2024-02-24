@@ -31,8 +31,9 @@ public class ExceptionMiddleware extends OncePerRequestFilter {
         response.getWriter().write(reason);
       }
     } catch (Exception e) {
-      this.logger.error("Resolved exception in %s %s: %s"
+      this.logger.error("Unexpected exception in %s %s: %s"
           .formatted(request.getMethod(), request.getRequestURI(), e));
+      e.printStackTrace();
 
       response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
       response.getWriter().write("There was an unexpected error while processing your request");
