@@ -1,10 +1,10 @@
 package net.pumbas.quizapi.middleware;
 
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ public abstract class AnnotatedFilter<A extends Annotation> extends OncePerReque
       HttpServletRequest request,
       HttpServletResponse response,
       FilterChain filterChain
-  ) {
+  ) throws ServletException, IOException {
     A annotation = this.getAnnotation(request);
     if (annotation == null) {
       this.logger.warn(
@@ -47,9 +47,9 @@ public abstract class AnnotatedFilter<A extends Annotation> extends OncePerReque
   }
 
   protected abstract void doFilter(
-      ServletRequest request, ServletResponse response,
+      HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain, A annotation
-  );
+  ) throws ServletException, IOException;
 
 
   /**
