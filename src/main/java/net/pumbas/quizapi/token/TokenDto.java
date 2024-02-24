@@ -1,4 +1,4 @@
-package net.pumbas.quizapi.user;
+package net.pumbas.quizapi.token;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,10 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginDto {
+public class TokenDto {
 
-  UserDto user;
-  String accessToken;
-  String refreshToken;
+  private String accessToken;
+  private String refreshToken;
 
 }

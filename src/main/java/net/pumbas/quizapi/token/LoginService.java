@@ -1,8 +1,10 @@
-package net.pumbas.quizapi.user;
+package net.pumbas.quizapi.token;
 
 import java.util.Optional;
 import lombok.Data;
-import net.pumbas.quizapi.token.TokenService;
+import net.pumbas.quizapi.user.User;
+import net.pumbas.quizapi.user.UserDto;
+import net.pumbas.quizapi.user.UserService;
 import net.pumbas.quizapi.user.providers.UserData;
 import net.pumbas.quizapi.user.providers.UserDataProvider;
 import net.pumbas.quizapi.user.providers.UserDataProviderFactory;
@@ -38,8 +40,10 @@ public class LoginService {
 
     LoginDto loginDto = LoginDto.builder()
         .user(user)
-        .accessToken(this.tokenService.generateAccessToken(user.getId()))
-        .refreshToken(this.tokenService.generateNewRefreshToken(user.getId()))
+        .tokens(TokenDto.builder()
+            .accessToken(this.tokenService.generateAccessToken(user.getId()))
+            .refreshToken(this.tokenService.generateNewRefreshToken(user.getId()))
+            .build())
         .build();
 
     return new LoginResult(isNewUser, loginDto);
