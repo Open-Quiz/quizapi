@@ -93,19 +93,22 @@ public class TokenService {
 
     if (refreshToken.getState() == RefreshTokenState.INVALIDATED_USED) {
       // This token has already been used! This is a potential refresh token reuse attack!!!
-      this.logger.warn("Refresh token reuse: Refresh token %s for user '%s' has already been used"
-          .formatted(refreshTokenJws, refreshToken.getUser().getUsername()));
+      this.logger.warn(
+          "Refresh token reuse: Refresh token %s for user '%s' (%s) has already been used"
+              .formatted(refreshTokenId, refreshToken.getUser().getUsername(), refreshTokenId));
 
       Long originalTokenId = this.getOriginalToken(refreshToken).getId();
       this.refreshTokenRepository.invalidateRefreshTokenFamily(originalTokenId);
-      throw new UnauthorizedException("The refresh token has already been used");
+      throw new UnauthorizedException(
+          "The refresh token %s has already been used".formatted(refreshTokenId));
     }
     if (refreshToken.getState() == RefreshTokenState.INVALIDATED) {
       // We allow an invalidated token to be used once as there's no way for the frontend to know
       // it's been invalidated until it tries to use it.
       refreshToken.setState(RefreshTokenState.INVALIDATED_USED); // Mark the token as used
       this.refreshTokenRepository.save(refreshToken);
-      throw new UnauthorizedException("The refresh token has already been invalidated");
+      throw new UnauthorizedException(
+          "The refresh token %s has already been invalidated".formatted(refreshTokenId));
     }
 
     refreshToken.setState(RefreshTokenState.INVALIDATED_USED);
@@ -225,7 +228,7 @@ public class TokenService {
     ZonedDateTime expiration = now.plusSeconds(this.configuration.getAccessTokenExpirySeconds());
 
     return Jwts.builder()
-        .subject(refreshToken.getUser().getId().toString())
+        .subject(refreshToken.getId().toString())
         .expiration(Date.from(expiration.toInstant()))
         .issuedAt(Date.from(now.toInstant()))
         .issuer(API_ISSUER)
